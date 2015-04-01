@@ -5,6 +5,12 @@
  * @since Solubienes 1.0
  */
 
+$inicio_vars = get_post_custom( get_page_by_title('Inicio')->ID );
+
+$title = $inicio_vars['titulo'][0];
+$subtitle = $inicio_vars['subtitulo'][0];
+$description = $inicio_vars['descripcion'][0];
+
 get_header(); ?>
 
 	<div class="main container-fluid">
@@ -25,8 +31,8 @@ get_header(); ?>
 
 			<!-- title & desc -->
 			<div class="col-md-6 main-desc">
-				<h1>Lorem ipsum dolor sit amet</h1>
-				<h2>Consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam.</h2>
+				<h1><?php echo $title; ?></h1>
+				<h2><?php echo $subtitle; ?></h2>
 			</div>
 
 			<!-- empty right space -->
@@ -43,7 +49,7 @@ get_header(); ?>
 
 			<!-- content -->
 			<div class="col-md-6 content">
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud</p>
+				<p><?php echo $description; ?></p>
 			</div>
 
 			<!-- empty right space -->
@@ -68,7 +74,55 @@ get_header(); ?>
 				<div class="swiper-container">
 					<div class="swiper-wrapper">
 
-						<!-- to be looped -->
+						<?php
+							$new_projects_fixed = array();
+							$new_projects_fixed_ids = array();
+
+							for ($i = 1; $i <= 3; $i++) {
+								if ($inicio_vars['nuevo_proyecto_' . $i][0] > 0) {
+									$new_projects_fixed[] = get_post( $inicio_vars['nuevo_proyecto_' . $i][0] );
+									$new_projects_fixed_ids[] = $inicio_vars['nuevo_proyecto_' . $i][0];
+								}
+							}
+
+							$args = array(
+								'post_type' => 'solubienes',
+								'tipo' => 'conjunto-residencial',
+							);
+
+							$new_projects = get_posts( $args );
+
+							foreach ($new_projects_fixed as $project) :
+								$project_vars = get_post_custom( $project->ID );
+
+								$img = get_property_image( $project_vars );
+						?>
+						<div class="swiper-slide">
+							
+							<div class="box new">
+								<div class="title" style="background-image:url(<?php echo $img; ?>)">
+									<h2><?php echo $project->post_title ?></h2>
+									<div class="star">
+										<i class="fa fa-star"></i>
+									</div>
+								</div>
+								<div class="icons">
+									<?php print_property_quantities( $project_vars ); ?>
+								</div>
+								<div class="icons_more">
+									<span>Beneficios</span>
+									<?php print_property_benefits( $project_vars ); ?>
+								</div>
+								<div class="price">
+									<span><?php print_property_price( $project_vars ); ?></span>
+								</div>
+							</div>
+
+						</div>
+						<?php endforeach; ?>
+
+						<?php if (false) : ?>
+						<!-- LAYOUT DEMO -->
 						<div class="swiper-slide">
 							
 							<div class="box new">
@@ -189,6 +243,7 @@ get_header(); ?>
 							</div>
 
 						</div>
+						<?php endif; ?>
 					</div>
 				</div>
 

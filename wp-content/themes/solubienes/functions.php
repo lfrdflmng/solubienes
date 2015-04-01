@@ -507,3 +507,72 @@ function single_custom_post_template( $template ) {
 	return $template;
 }
 add_filter( 'template_include', 'single_custom_post_template', 99 );*/
+
+function currency() {
+	return 'Bs.f ';
+}
+
+
+function get_property_image($vars) {
+	$img = (int)$vars['foto_principal'][0];
+	if ($img > 0) {
+		$img = get_post( $img );
+		$img = $img->guid;
+	}
+	else {
+		$img = esc_url( get_template_directory_uri() ) . '/img/img_placeholder_house.png';
+	}
+	return $img;
+}
+
+
+function print_property_quantities($vars) {
+	$area = $vars['area'][0];
+	$rooms = (int)$vars['cantidad_habitaciones'][0];
+	$baths = (int)$vars['cantidad_banos'][0];
+	$parkings = (int)$vars['cantidad_estacionamientos'][0];
+	echo <<<EOT
+		<span><i class="custom-icon icon-graph"></i> {$area} mts2</span>
+EOT;
+	if ($rooms > 0) echo <<<EOT
+		<span><i class="custom-icon icon-bed"></i> {$rooms}</span>
+EOT;
+	if ($baths > 0) echo <<<EOT
+		<span><i class="custom-icon icon-tub"></i> {$baths}</span>
+EOT;
+	if ($parkings > 0) echo <<<EOT
+		<span><i class="custom-icon icon-cab"></i> {$parkings}</span>
+EOT;
+}
+
+function print_property_benefits($vars) {
+	$benefits = unserialize($vars['beneficios'][0]);
+	$icons = array(
+		'wifi' => 'wifi',
+		'hospital' => 'stethoscope',
+		'transporte' => 'bus',
+		'mercado' => 'basket',
+		'piscina' => 'pool',
+		'seguridad' => 'security-cam'
+	);
+	$descriptions = array(
+		'wifi' => 'Conexión a Internet libre',
+		'hospital' => 'Hospital Cercano',
+		'transporte' => 'Transporte Público',
+		'mercado' => 'Mercado / C.C. cercano',
+		'piscina' => 'Piscina',
+		'seguridad' => 'Sistema de Seguridad'
+	);
+	foreach ($benefits as $benefit) {
+		echo '<span><i class="custom-icon icon-' . $icons[$benefit] . '" data-toggle="tooltip" title="' . $descriptions[$benefit] . '"></i></span>';
+	}
+}
+
+function print_property_price($vars) {
+	$price = str_replace('.', '', $vars['monto'][0]);
+	$price = (float)str_replace(',', '.', $price);
+	if ($price > 0) {
+		return currency() . number_format($price, 2, ',', '.' );
+	}
+	return '';
+}
