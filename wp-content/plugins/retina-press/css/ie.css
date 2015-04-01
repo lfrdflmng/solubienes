@@ -1,0 +1,36 @@
+#wpwrap #wpcontent #wpadminbar {
+	height:34px !important;
+}
+
+#wpadminbar .quicklinks {
+	margin-right:50px !important;
+}
+
+#wpadminbar .ab-top-secondary {
+	margin-top: -30px !important;
+}
+
+span.ab-label {
+	float: right;
+	margin: 0 !important;
+}
+
+.postbox {
+	position:relative !important;
+	padding-top:60px !important;
+}
+
+.postbox .handlediv {
+	z-index:500 !important;
+	position:absolute !important;
+	top:0 !important;
+	right:0 !important;
+}
+
+.postbox .hndle {
+	box-sizing: border-box;
+	width:100%;
+	position:absolute !important;
+	top:0 !important;
+	height:40px !important;
+}

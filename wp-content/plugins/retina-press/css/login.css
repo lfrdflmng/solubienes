@@ -1,0 +1,201 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700,600);
+
+* {
+	filter: none;
+}
+
+/* http://meyerweb.com/eric/tools/css/neset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+strong {
+	font-weight: bold;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+} 
+
+/**  MAIN STYLES  **/
+
+@font-face {
+    font-family: 'entypo';
+    src: url('../@font-face/entypo.eot');
+    src: url('../@font-face/entypo.eot?#iefix') format('embedded-opentype'),
+         url('../@font-face/entypo.woff') format('woff'),
+         url('../@font-face/entypo.ttf') format('truetype'),
+         url('../@font-face/entypo.svg#entypo') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body.login {
+	font-family: arial;
+	font-size: 12px;
+	background: #3B3E40;
+}
+
+p {
+	margin: 0 0 10px 0;
+	line-height: 15px;
+}
+
+a:link, a:active, a:visited {
+	text-decoration: none;
+	color: #5daced;
+}
+
+input[type="text"], input[type="email"], input[type="search"], input[type="password"], textarea, .login form .input, .login input[type="text"] {
+	-webkit-appearance: none;
+	background: #fff;
+}
+
+input[type="checkbox"] {
+	width: 10px !important;
+}
+
+input, textarea, .login form .input, .login input[type="text"] {
+	padding:10px;
+	font-size: 12px;
+	font-family: Arial;
+	color:#606060;
+	border:1px solid #e3e3e3;
+	background: #fff;
+	width: 100%;
+	margin: 0 0 15px 0;
+	
+	border-radius:3px;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+input:focus, textarea:focus, .login form .input:focus, .login input[type="text"]:focus {
+	border: 1px solid #5DACED;
+	
+	box-shadow: inset 0 0 8px rgba(93, 127, 237, 0.3);
+	-moz-box-shadow: inset 0 0 8px rgba(93, 127, 237, 0.3);
+	-webkit-box-shadow: inset 0 0 8px rgba(93, 127, 237, 0.3);
+}
+
+#loginform {
+	background: none;
+	border: none;
+	box-shadow: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	-o-box-shadow: none;
+}
+
+#loginform label {
+	color: #fff;
+}
+
+#loginform #wp-submit {
+	border: 1px solid #323537;
+	width: 100%;
+	margin: 0;
+	font-weight: bold;
+	height: auto;
+	line-height: normal;
+	padding: 10px !important;
+	margin: 10px 0;
+	text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+	background: #208ed3;
+	background: -moz-linear-gradient(top, #208ed3 0%, #0272bd 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#208ed3), color-stop(100%,#0272bd));
+	background: -webkit-linear-gradient(top, #208ed3 0%,#0272bd 100%);
+	background: -o-linear-gradient(top, #208ed3 0%,#0272bd 100%);
+	background: -ms-linear-gradient(top, #208ed3 0%,#0272bd 100%);
+	background: linear-gradient(to bottom, #208ed3 0%,#0272bd 100%);
+}
+
+#loginform #wp-submit:hover {
+	color: #3B3E40;
+	text-shadow: none;
+	background: #ededee !important;
+	background: -moz-linear-gradient(top, #ededee 0%, #dddddd 100%) !important;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ededee), color-stop(100%,#dddddd)) !important;
+	background: -webkit-linear-gradient(top, #ededee 0%,#dddddd 100%) !important;
+	background: -o-linear-gradient(top, #ededee 0%,#dddddd 100%) !important;
+	background: -ms-linear-gradient(top, #ededee 0%,#dddddd 100%) !important;
+	background: linear-gradient(to bottom, #ededee 0%,#dddddd 100%) !important;
+}
+
+.login #nav a {
+	color: #ccc !important;
+	text-shadow: 1px 0 0 rgba(0, 0, 0, .5);
+}
+
+.login #nav a:hover {
+	color: #5daced !important;
+}
+
+.login #backtoblog a {
+	display: none;
+}
+
+#login_error, .login .message {
+	margin: 30px 25px 0 30px !important;
+	padding: 12px !important;
+}
+
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2),
+only screen and (min--moz-device-pixel-ratio: 2),
+only screen and (-o-min-device-pixel-ratio: 2/1),
+only screen and (min-device-pixel-ratio: 2),
+only screen and (min-resolution: 192dpi),
+only screen and (min-resolution: 2dppx) { 
+
+	body.login div#login h1 a {
+		background-image: url(../images/logox2.png);
+		background-size: 181px !important;
+		height: 20px;
+	}
+
+}
