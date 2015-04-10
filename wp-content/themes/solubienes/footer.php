@@ -116,6 +116,27 @@
 		  displayKey: 'value',
 		  source: substringMatcher(zones)
 		});
+
+		//cookies for searches
+		if(typeof(Storage) !== 'undefined') {
+			<?php if (isset($_GET['zona'], $_GET['tipo'], $_GET['operacion'])) : ?>
+				<?php if (!empty($_GET['zona'])) : ?>
+			    localStorage.setItem('zona', '<?php echo $_GET['zona']; ?>');
+			    <?php endif; ?>
+
+			    <?php if (!empty($_GET['tipo'])) : ?>
+			    localStorage.setItem('tipo', '<?php echo $_GET['tipo']; ?>');
+			    <?php endif; ?>
+
+			    <?php if (!empty($_GET['operacion'])) : ?>
+			    localStorage.setItem('operacion', '<?php echo $_GET['operacion']; ?>');
+			    <?php endif; ?>
+			<?php else : ?>
+				$('input[name=zona]').val( localStorage.getItem('zona') );
+				$('select[name=tipo]').val( localStorage.getItem('tipo') );
+				$('select[name=operacion]').val( localStorage.getItem('operacion') );
+			<?php endif; ?>
+		}
 	});
 
 	function bookmarkPage($star) {
@@ -144,12 +165,12 @@
 			});
 		}
 		<?php else : ?>
-		alert('Regístrate para porder guardar tus favoritos');
+		alert('Regístrate para poder guardar tus favoritos');
 		var $a = jQuery('.login-btn').find('.icon-key').eq(0);
 		$a.addClass('animated bounce');
 		setTimeout(function() {
 			$a.removeClass('animated bounce');
-		}, 5000);
+		}, 2000);
 		<?php endif; ?>
 	}
 </script>

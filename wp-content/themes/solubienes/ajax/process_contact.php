@@ -21,7 +21,7 @@ if (!function_exists('set_html_content_type')) {
     	if (!empty($correo) || !empty($telefono)) {
 	        $url = get_template_directory_uri() . '/img/logo.png';
 	        $html = <<<EOT
-<img src="{$url}" alt="" style="margin-bottom:20px">
+<img src="{$url}" alt="Solubienes" style="margin:20px">
 <table border="0" style="padding:50px 0 0 50px; border:0">
     <tr>
         <th style="text-align:right">Nombre: </th>
@@ -54,6 +54,20 @@ EOT;
 		        );
 
 		        @add_filter( 'wp_mail_content_type', 'set_html_content_type' );
+
+		        //for consultant
+		        if (isset($_POST['asesor_id'])) {
+		        	$asesor_id = (int)$_POST['asesor_id'];
+		        	if ($asesor_id > 0) {
+		        		$asesor = get_post_meta($asesor_id, 'correo', true);
+		        		if (!empty($asesor)) {
+		        			$asesor = trim($asesor);
+		        			if (filter_var($asesor, FILTER_VALIDATE_EMAIL)) {
+		        				$multiple_to_recipients[] = $asesor;
+							}
+		        		}
+		        	}
+		        }
 
 		        $sent = wp_mail( $multiple_to_recipients, 'Nuevo Mensaje desde Solubienes', $html );
 

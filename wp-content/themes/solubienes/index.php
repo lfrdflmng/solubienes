@@ -154,7 +154,7 @@ get_header(); ?>
 	<div class="section container">
 		<div class="row">
 			<div class="col-md-12">
-				<h2 class="with-margin-top">Propiedades Destacadas</h2>
+				<h2 class="highlight with-margin-top"><i class="fa fa-line-chart"></i> Propiedades Destacadas</h2>
 			</div>
 		</div>
 		<div class="row highlight-container">
@@ -176,7 +176,7 @@ get_header(); ?>
 			?>
 			<a href="<?php echo $project->guid; ?>">
 				<div class="col-md-4">
-					<div class="box highlight">
+					<div class="box highlight same-height">
 						<div class="title" style="background-image:url(<?php echo $img; ?>)">
 							<h2><?php echo $project->post_title; ?></h2>
 							<div class="star" data-id="<?php echo $project->ID; ?>">

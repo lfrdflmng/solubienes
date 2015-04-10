@@ -13,7 +13,7 @@
 				<form class="contact-ajax-form" method="post" action="<?php echo get_template_directory_uri() . '/ajax/process_contact.php'; ?>">
 					<h2><?php echo $form_title; ?></h2>
 					<div class="input">
-						<input type="text" name="nombre" placeholder="Nombre y Apellidos" required>
+						<input type="text" name="nombre" placeholder="Nombre y Apellido" required>
 					</div>
 					<div class="input">
 						<input type="tel" name="telefono" placeholder="Teléfono">

@@ -458,6 +458,7 @@ function add_custom_meta_boxes() {
 }
 add_action('add_meta_boxes', 'add_custom_meta_boxes');
 
+
 function save_custom_meta_data($id) {
     /* --- security verification --- */
     if(!wp_verify_nonce($_POST['wp_custom_attachment_nonce'], plugin_basename(__FILE__))) {
@@ -468,7 +469,7 @@ function save_custom_meta_data($id) {
       return $id;
     } // end if
        
-    if('page' == $_POST['post_type']) {
+    /*if('page' == $_POST['post_type']) {
       if(!current_user_can('edit_page', $id)) {
         return $id;
       } // end if
@@ -476,7 +477,7 @@ function save_custom_meta_data($id) {
         if(!current_user_can('edit_page', $id)) {
             return $id;
         } // end if
-    } // end if
+    } // end if*/
     /* - end security verification - */
 
     if($_FILES) {
@@ -498,8 +499,56 @@ function save_custom_meta_data($id) {
 			}
 		}
 	}
+
+	if ( !wp_is_post_revision( $id ) ) {
+        send_notification_email_for_interested_users($id);
+    }
 }
 add_action('save_post', 'save_custom_meta_data');
+
+
+function send_notification_email_for_interested_users( $post_id ) {
+	$post = get_post($post_id);
+    $vars = get_post_custom( $post_id );
+    $bookmars = getRelatedBookmarks( $vars['zona'][0], $vars['tipo'][0], $vars['operacion'][0] );
+
+    if ($post->post_modified != $post->post_date) return false; // not new
+    if ($post->post_type != 'solubienes') return false;
+
+    $multiple_to_recipients = array();
+    foreach ($bookmars as $bookmar) {
+    	$asesor = get_post_meta($asesor_id, 'correo', true);
+		if (!empty($asesor)) {
+			$asesor = trim($asesor);
+			if (filter_var($asesor, FILTER_VALIDATE_EMAIL)) {
+				$multiple_to_recipients[] = $asesor;
+			}
+		}
+    }
+    if (count($multiple_to_recipients)) {
+    	$logo_url = get_template_directory_uri() . '/img/logo.png';
+    	$title = $post->post_title;
+    	$url = $post->guid;
+        $html = <<<EOT
+			<img src="{$logo_url}" alt="Solubienes" style="margin:20px">
+			<p><b>Hola, en Solubienes tenemos nuevos inmuebles que te pueden interesar</b></p>
+			<br><br>
+			<p>Haz clic en el enlace para ver el inmueble:</p>
+			<br>
+			<a href="{$url}">{$title}</a>
+			<br><br>
+			<small>Solubienes F&amp;C</small>
+EOT;
+		@add_filter( 'wp_mail_content_type', 'set_html_content_type' );
+
+        $sent = wp_mail( $multiple_to_recipients, 'Nuevos Inmuebles en Solubienes', $html );
+
+        // Reset content-type to avoid conflicts -- http://core.trac.wordpress.org/ticket/23578
+        @remove_filter( 'wp_mail_content_type', 'set_html_content_type' );
+    }
+}
+//add_action( 'publish_post', 'send_notification_email_for_interested_users', 10, 2 );
+
 
 function update_edit_form() {
     echo ' enctype="multipart/form-data"';
@@ -1105,6 +1154,30 @@ function checkIfAlreadyBookmarked($u_id, $zona, $tipo, $operacion, &$vals) {
 	return $wpdb->get_var("SELECT COUNT(*) FROM favoritos WHERE usuario_id = {$u_id} AND {$where}") > 0;
 }
 
+function getRelatedBookmarks($zona, $tipo, $operacion) {
+	global $wpdb;
+
+	$vals = array();
+	$where = array();
+	if (!empty($zona)) {
+		$where[] = "zona='{$zona}'";
+		$vals['zona'] = $zona;
+	}
+	if (!empty($tipo)) {
+		$where[] = "tipo='{$tipo}'";
+		$vals['tipo'] = $tipo;
+	}
+	if (!empty($operacion)) {
+		$where[] = "operacion='{$operacion}'";
+		$vals['operacion'] = $operacion;
+	}
+	if (count($where) > 0) {
+		$where = implode(' AND ', $where);
+		return $wpdb->get_results("SELECT usuario_id FROM favoritos WHERE {$where} ORDER BY id DESC LIMIT 10");
+	}
+	return array();
+}
+
 function bookmark_search_for_user($values) {
 	$zona = trim($values['zona']);
 	$tipo = trim($values['tipo']);
@@ -1122,7 +1195,7 @@ function bookmark_search_for_user($values) {
 
 
 function my_enqueue( $hook ) {
-    if ('post.php' != $hook) {
+    if ('post.php' != $hook && 'post-new.php' != $hook) {
         return;
     }
     wp_enqueue_script( 'my_custom_script', get_template_directory_uri() . '/js/custom_admin.js' );

@@ -211,6 +211,9 @@ var _animate_menu_timer = false;
 		//blog thumbs height matching
 		$('.blog-thumb').find('.content').matchHeight();
 
+		//home highlights
+		$('.box.same-height').matchHeight();
+
 
 	    //star spin
 	    $('.star').click(function(e) {
@@ -220,8 +223,8 @@ var _animate_menu_timer = false;
 	    		$star.removeClass('animated flip');
 	    	}, 1000);
 
-	    	//bookmarking
-	    	if (window.sidebar) { // Mozilla Firefox Bookmark
+	    	//bookmarking (!) outdated. not working
+	    	/*if (window.sidebar) { // Mozilla Firefox Bookmark
 	    		if (typeof window.sidebar.addPanel != 'undefined') { //not supported by newer Firefox
 					window.sidebar.addPanel(location.href,document.title,"");
 				}
@@ -231,7 +234,7 @@ var _animate_menu_timer = false;
 			}
 			else if (window.opera && window.print) { // Opera Hotlist
 				this.title=document.title;
-			}
+			}*/
 
 			if (parseInt($star.attr('data-id')) > 0) {
 				$('#property_id').val( parseInt($star.attr('data-id')) );
