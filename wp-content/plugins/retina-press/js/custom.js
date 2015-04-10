@@ -60,7 +60,7 @@ jQuery(document).ready(function() {
 	if(jQuery("input").is("th > input")){
 		//
 	} else {
-		jQuery('input:checkbox').checkbox();
+		//jQuery('input:checkbox').checkbox();
 	}
 
 });

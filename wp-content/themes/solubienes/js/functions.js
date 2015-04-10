@@ -75,7 +75,21 @@ var _animate_menu_timer = false;
 		$menu.find('.thumb.' + cat).show();
 	}
 
+	function bringAttentionToField($field) {
+		$field.addClass('animated shake');
+		setTimeout(function() {
+			$field.removeClass('animated shake');
+		}, 1000);
+	}
+
+	function validEmail(email) {
+	    var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+	    return re.test(email);
+	}
+
 	$(document).ready(function() {
+
+		$('.gallery').hide();
 
 		//mobile menu
 		$('.mobile-menu-btn').click(function() {
@@ -93,8 +107,8 @@ var _animate_menu_timer = false;
 		});
 
 		//login button
-		$('.login-btn').mouseenter(function() {
-			var $a = $(this).find('i').eq(0);
+		$('.login-btn').find('.icon-key').click(function() {
+			var $a = $(this);//$(this).find('i').eq(0);
 			$a.addClass('animated bounce');
 			setTimeout(function() {
 				$a.removeClass('animated bounce');
@@ -184,15 +198,51 @@ var _animate_menu_timer = false;
 			showHoverMenu( $(this) );
 		});
 
+		$('#hover_view_more').click(function(e) {
+			var $link = $('.hover-menu').find('li.active');
+			window.location.href = $(this).attr('href') + '/?tipo=' + $link.attr('id');
+			e.preventDefault();
+			return false;
+		});
+
+		//highlights height matching
+		$('.box.highlight').find('.desc').matchHeight();
+
+		//blog thumbs height matching
+		$('.blog-thumb').find('.content').matchHeight();
+
 
 	    //star spin
-	    $('.star').click(function() {
+	    $('.star').click(function(e) {
 	    	var $star = $(this);
 	    	$star.addClass('animated flip');
 	    	setTimeout(function() {
 	    		$star.removeClass('animated flip');
 	    	}, 1000);
-	    });
+
+	    	//bookmarking
+	    	if (window.sidebar) { // Mozilla Firefox Bookmark
+	    		if (typeof window.sidebar.addPanel != 'undefined') { //not supported by newer Firefox
+					window.sidebar.addPanel(location.href,document.title,"");
+				}
+			}
+			else if (window.external) { // IE Favorite
+				window.external.AddFavorite(location.href,document.title);
+			}
+			else if (window.opera && window.print) { // Opera Hotlist
+				this.title=document.title;
+			}
+
+			if (parseInt($star.attr('data-id')) > 0) {
+				$('#property_id').val( parseInt($star.attr('data-id')) );
+				if (typeof bookmarkPage == 'function') {
+					bookmarkPage($star);
+				}
+			}
+
+			e.preventDefault();
+			return false;
+    	});
 
 
 	    //isotope (elements arranging)
@@ -230,25 +280,205 @@ var _animate_menu_timer = false;
 		$('.contact-form').find('button[type=submit]').click(function(e) {
 			var $frm = $(this).closest('form');
 			var $card = $frm.closest('.card');
+			var url = $frm.attr('action');
+
+			//required fields
+			var $input_name = $frm.find('input[name=nombre]');
+			var $input_tel = $frm.find('input[name=telefono]');
+			var $input_email = $frm.find('input[name=correo]');
+
+			//check name
+			if ($input_name.val().trim().length == 0) {
+				bringAttentionToField($input_name);
+				return false;
+			}
+			//check phone / email
+			if ($input_tel.val().trim().length == 0 && $input_email.val().trim().length == 0) {
+				bringAttentionToField($input_email);
+				return false;
+			}
+			if ($input_email.val().trim().length > 0 && !validEmail($input_email.val())) {
+				bringAttentionToField($input_email);
+				return false;
+			}
+
+			//resets defaults
+			var $sending = $card.find('.sending');
+			$sending.removeClass('animated flash').find('.letter').removeClass('magictime puffOut');
+			$sending.find('h1').removeClass('magictime puffOut');
+			$card.find('.letter-cover').removeClass('active');
+			$card.find('.sent').addClass('hidden').find('.icon-ok').removeClass('magictime puffIn').find('h1').addClass('magictime puffIn');
+			$card.find('.not-sent').addClass('hidden');
+
 			$card.addClass('flipped');
+
 			setTimeout(function() {
 				$card.find('.sending').addClass('animated flash');
 			}, 500);
+
+			$.ajax({
+				method: 'POST',
+				url: url,
+				data: $frm.serialize(),
+				dataType: 'json'
+			})
+			.done(function( data ) {
+				if (data['ok'] == 1) {
+					setTimeout(function() {
+						$card.find('.letter-cover').addClass('active');
+						$sending.removeClass('animated flash').find('.letter').addClass('magictime puffOut');
+						$sending.find('h1').addClass('magictime puffOut');
+						if (data['sent'] == 1) {
+							setTimeout(function() {
+								var $sent = $card.find('.sent');
+								$sent.removeClass('hidden');
+								$sent.find('.icon-ok').addClass('magictime puffIn');
+								$sent.find('h1').addClass('magictime puffIn');
+							}, 700);
+						}
+						else {
+							setTimeout(function() {
+								var $sent = $card.find('.not-sent');
+								$sent.removeClass('hidden');
+								//$sent.find('.icon-bad').addClass('magictime tinDownIn');
+								//$sent.find('h1').addClass('magictime puffIn');
+							}, 500);
+							setTimeout(function() {
+								$card.removeClass('flipped');
+							},5000);
+						}
+					},500);
+				}
+			});
+
+			e.preventDefault();
+			return false;
+		});
+
+		$('.contact-form-alt').find('button[type=submit]').click(function(e) {
+			var $card = $(this).closest('.contact-form-alt');
+			var $frm = $(this).closest('form');
+			var url = $frm.attr('action');
+
+			//required fields
+			var $input_name = $frm.find('input[name=nombre]');
+			var $input_tel = $frm.find('input[name=telefono]');
+			//var $input_email = $frm.find('input[name=correo]');
+
+			//check name
+			if ($input_name.val().trim().length == 0) {
+				bringAttentionToField($input_name);
+				return false;
+			}
+			//check phone / email
+			if ($input_tel.val().trim().length == 0 /*&& $input_email.val().trim().length == 0*/) {
+				bringAttentionToField($input_tel);
+				return false;
+			}
+			/*if ($input_email.val().trim().length > 0 && !validEmail($input_email.val())) {
+				bringAttentionToField($input_email);
+				return false;
+			}*/
+
+			//resets defaults
+			var $sending = $card.find('.sending');
+			$sending.removeClass('hidden animated flash').find('.letter').removeClass('magictime puffOut');
+			$sending.find('h1').removeClass('magictime puffOut');
+			$card.find('.letter-cover').removeClass('active');
+			$card.find('.sent').addClass('hidden').find('.icon-ok').removeClass('magictime puffIn').find('h1').addClass('magictime puffIn');
+			$card.find('.not-sent').addClass('hidden');
+
+			$card.find('.form-holder').addClass('hidden');
+
 			setTimeout(function() {
-				$card.find('.letter-cover').addClass('active');
-				var $sending = $card.find('.sending');
-				$sending.removeClass('animated flash').find('.letter').addClass('magictime puffOut');
-				$sending.find('h1').addClass('magictime puffOut');
-				setTimeout(function() {
-					var $sent = $card.find('.sent');
-					$sent.removeClass('hidden');
-					$sent.find('.icon-ok').addClass('magictime puffIn');
-					$sent.find('h1').addClass('magictime puffIn');
-				}, 700);
-			},3000);
+				$card.find('.sending').removeClass('hidden').addClass('animated flash');
+			}, 100);
+
+			$.ajax({
+				method: 'POST',
+				url: url,
+				data: $frm.serialize(),
+				dataType: 'json'
+			})
+			.done(function( data ) {
+				if (data['ok'] == 1) {
+					setTimeout(function() {
+						$card.find('.letter-cover').addClass('active');
+						$sending.removeClass('animated flash').find('.letter').addClass('magictime puffOut');
+						$sending.find('h1').addClass('magictime puffOut');
+						if (data['sent'] == 1) {
+							setTimeout(function() {
+								var $sent = $card.find('.sent');
+								$sent.removeClass('hidden');
+								$sent.find('.icon-ok').addClass('magictime puffIn');
+								$sent.find('h1').addClass('magictime puffIn');
+							}, 700);
+						}
+						else {
+							setTimeout(function() {
+								var $sent = $card.find('.not-sent');
+								$sent.removeClass('hidden');
+								//$sent.find('.icon-bad').addClass('magictime tinDownIn');
+								//$sent.find('h1').addClass('magictime puffIn');
+							}, 500);
+							setTimeout(function() {
+								$card.removeClass('flipped');
+							},5000);
+						}
+					},500);
+				}
+			});
+
+			e.preventDefault();
+			return false;
+		});
+
+		//for the consultants page. Repeating same values across forms
+		$('input.repeat-value').change(function() {
+			var $o = $(this);
+			var field = $o.attr('name');
+			console.log('input[name=' + field + ']');
+			$('input[name=' + field + ']').val( $o.val() );
+		});
+
+
+		//gallery
+		$('.gallery').slideDown();
+
+
+		//login form
+		$('.tab-changer').click(function(e) {
+			$('.tab_content_login').hide();
+			$( $(this).attr('href') ).fadeIn();
 			e.preventDefault();
 			return false;
 		});
 	});
 
 } )( jQuery );
+
+
+//for typeahead
+var substringMatcher = function(strs) {
+  return function findMatches(q, cb) {
+    var matches, substrRegex;
+ 
+    // an array that will be populated with substring matches
+    matches = [];
+ 
+    // regex used to determine if a string contains the substring `q`
+    substrRegex = new RegExp(q, 'i');
+ 
+    // iterate through the pool of strings and for any string that
+    // contains the substring `q`, add it to the `matches` array
+    jQuery.each(strs, function(i, str) {
+      if (substrRegex.test(str)) {
+        // the typeahead jQuery plugin expects suggestions to a
+        // JavaScript object, refer to typeahead docs for more info
+        matches.push({ value: str });
+      }
+    });
+ 
+    cb(matches);
+  };
+};

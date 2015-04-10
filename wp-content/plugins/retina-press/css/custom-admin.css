@@ -80,13 +80,13 @@ table {
 input[type="text"], input[type="email"], input[type="search"], input[type="password"], textarea {
 	-webkit-appearance: none !important;
 	background: #fff !important;
-	padding:10px !important;
+	padding:2px 7px !important;	
 	font-family: Arial !important;
 	color:#606060 !important;
 	border:1px solid #e3e3e3 !important;
 	
-	height: 50px !important;
-	font-size: 30px !important;
+	min-height: 28px !important;
+	font-size: 14px !important;
 	
 	border-radius:3px !important;
 	-webkit-border-radius:3px !important;
@@ -95,6 +95,10 @@ input[type="text"], input[type="email"], input[type="search"], input[type="passw
 	-webkit-box-sizing: border-box !important;
 	-moz-box-sizing: border-box !important;
 	-ms-box-sizing: border-box !important;
+}
+
+#titlediv #title {
+	font-size: 28px !important;
 }
 
 input:focus, textarea:focus {
@@ -1661,11 +1665,14 @@ only screen and (min-resolution: 2dppx) {
 }
 
 
-/*#wp-admin-bar-root-default li:not(#wp-admin-bar-site-name), #screen-options-link-wrap, #contextual-help-link-wrap, #dashboard_right_now, #wp_dashboard_widget, #dashboard_activity, #dashboard_primary, #column3-sortables,
-#menu-dashboard ul.wp-submenu, #menu-media, #menu-pages ul.wp-submenu, #menu-comments, #menu-appearance, #menu-plugins, #menu-tools, #menu-settings ul.wp-submenu, #wpfooter {
+#wp-admin-bar-root-default li:not(#wp-admin-bar-site-name), #screen-options-link-wrap, #contextual-help-link-wrap, 
+#dashboard_right_now, #wp_dashboard_widget, #dashboard_activity, #dashboard_primary, #column3-sortables,
+#menu-dashboard ul.wp-submenu, #menu-media, #menu-pages ul.wp-submenu, #menu-comments, #menu-appearance, #menu-plugins, 
+#menu-tools, #menu-settings ul.wp-submenu, #wpfooter, #content-permissions-meta-box , #toplevel_page_edit-post_type-acf, 
+#menu-users ul.wp-submenu, #pageparentdiv, .handlediv {
 	display: none !important;
-	visibility: hidden: !important;
-}*/
+	visibility: hidden !important;
+}
 
 #wpadminbar {
 	margin-bottom: 0px !important;

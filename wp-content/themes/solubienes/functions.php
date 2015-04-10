@@ -334,6 +334,8 @@ require get_template_directory() . '/inc/customizer.php';
 
 //solubienes
 
+show_admin_bar(false);
+
 if(!function_exists('saveImage')) {
 	function saveImage($file_handler, $post_id, $setthumb = 'false') {
 		// check to make sure its a successful upload
@@ -365,10 +367,24 @@ function posts_solubienes() {
         'description' => 'Inmuebles',
         'public' => true,
         'menu_position' => 20,
-        'supports' => array( 'title'/*, 'editor'*/, 'thumbnail', 'categories' )
+        'supports' => array( 'title'/*, 'editor'*/, 'thumbnail', 'categories' ),
+
+        'capability_type' => 'solubienes',
+		'capabilities' => array(
+			'publish_posts' => 'publish_solubienes',
+			'edit_posts' => 'edit_solubienes',
+			'edit_others_posts' => 'edit_others_solubienes',
+			'delete_posts' => 'delete_solubienes',
+			'delete_others_posts' => 'delete_others_solubienes',
+			'read_private_posts' => 'read_private_solubienes',
+			'edit_post' => 'edit_solubienes',
+			'delete_post' => 'delete_solubienes',
+			'read_post' => 'read_solubienes'
+		)
     ));
 }
 add_action( 'init', 'posts_solubienes' );
+
 
 function posts_solubienes_taxonomy() {
 	register_taxonomy(
@@ -491,33 +507,57 @@ function update_edit_form() {
 add_action('post_edit_form_tag', 'update_edit_form');
 
 
-/*//SINGLE TEMPLATE FOR "LO QUE DEBES SABER" / "ESPECIALES"
+// CUSTOM POST "Inmuebles"
+function posts_asesores() {
+    register_post_type( 'asesores', array(
+        'labels' => array(
+            'name' => 'Asesores',
+            'singular_name' => 'Asesor',
+        ),
+        'menu_icon' => 'dashicons-id', //<-- https://developer.wordpress.org/resource/dashicons/
+        'description' => 'Asesores',
+        'public' => true,
+        'menu_position' => 20,
+        'supports' => array( 'title'/*, 'editor'*/, 'thumbnail'/*, 'categories'*/ )
+    ));
+}
+add_action( 'init', 'posts_asesores' );
+
+
+//SINGLE TEMPLATE FOR "BLOG" AND "ASESORES"
 function single_custom_post_template( $template ) {
 	$post_id = get_the_ID();
 	if ( is_single() &&  $post_id) {
         $post_type = get_post_type($post_id);
-        if ($post_type == 'lo_que_debes_saber' ) {
-            $_template = locate_template( array( 'template-lo_que_debes_saber.php' ) );
+        if ($post_type == 'post' ) {
+            $_template = locate_template( array( 'templates/page-blog_single.php' ) );
         }
-        elseif ($post_type == 'especiales') {
-            $_template = locate_template( array( 'template-especiales.php' ) );
+        elseif ($post_type == 'asesores') {
+            $_template = locate_template( array( 'templates/page-asesores.php' ) );
         }
 		$template = ( $_template ) ? $_template : $template;
 	}
 	return $template;
 }
-add_filter( 'template_include', 'single_custom_post_template', 99 );*/
+add_filter( 'template_include', 'single_custom_post_template', 99 );
+
 
 function currency() {
 	return 'Bs.f ';
 }
 
 
-function get_property_image($vars) {
+function get_property_image($vars, $size = null) {
 	$img = (int)$vars['foto_principal'][0];
 	if ($img > 0) {
-		$img = get_post( $img );
-		$img = $img->guid;
+		if ($size == null) {
+			$img = get_post( $img );
+			$img = $img->guid;
+		}
+		else {
+			$img = wp_get_attachment_image_src($img, $size, false, '');
+			if (is_array($img)) $img = reset($img);
+		}
 	}
 	else {
 		$img = esc_url( get_template_directory_uri() ) . '/img/img_placeholder_house.png';
@@ -526,27 +566,71 @@ function get_property_image($vars) {
 }
 
 
-function print_property_quantities($vars) {
+function print_property_quantities($vars, $type = 0) {
 	$area = $vars['area'][0];
 	$rooms = (int)$vars['cantidad_habitaciones'][0];
 	$baths = (int)$vars['cantidad_banos'][0];
 	$parkings = (int)$vars['cantidad_estacionamientos'][0];
-	echo <<<EOT
-		<span><i class="custom-icon icon-graph"></i> {$area} mts2</span>
+	if ($type == 0) { //for box
+		if ($area > 0) echo <<<EOT
+		<span><i class="custom-icon icon-graph"></i> {$area} mts<sup>2</sup></span>
 EOT;
-	if ($rooms > 0) echo <<<EOT
+		if ($rooms > 0) echo <<<EOT
 		<span><i class="custom-icon icon-bed"></i> {$rooms}</span>
 EOT;
-	if ($baths > 0) echo <<<EOT
+		if ($baths > 0) echo <<<EOT
 		<span><i class="custom-icon icon-tub"></i> {$baths}</span>
 EOT;
-	if ($parkings > 0) echo <<<EOT
+		if ($parkings > 0) echo <<<EOT
 		<span><i class="custom-icon icon-cab"></i> {$parkings}</span>
 EOT;
+	}
+	elseif ($type == 1) { //for thumb
+		if ($rooms > 0) echo <<<EOT
+		<li><i class="custom-icon icon-bed"></i> {$rooms}</li>
+EOT;
+		if ($baths > 0) echo <<<EOT
+		<li><i class="custom-icon icon-tub"></i> {$baths}</li>
+EOT;
+		if ($parkings > 0) echo <<<EOT
+		<li><i class="custom-icon icon-cab"></i> {$parkings}</li>
+EOT;
+	}
+	else { //for single
+		if ($area > 0) echo <<<EOT
+		<div class="col-md-3 col-sm-3 col-xs-6">
+			<strong>Medidas</strong>
+			<p><i class="custom-icon icon-graph"></i> {$area} mts<sup>2</sup></p>
+		</div>
+EOT;
+		if ($rooms > 0) echo <<<EOT
+		<div class="col-md-3 col-sm-3 col-xs-6">
+			<strong>Habitaciones</strong>
+			<p><i class="custom-icon icon-bed"></i> {$rooms}</p>
+		</div>
+EOT;
+		if ($baths > 0) echo <<<EOT
+		<div class="col-md-3 col-sm-3 col-xs-6">
+			<strong>Baños</strong>
+			<p><i class="custom-icon icon-tub"></i> {$baths}</p>
+		</div>
+EOT;
+		if ($parkings > 0) echo <<<EOT
+		<div class="col-md-3 col-sm-3 col-xs-6">
+			<strong>Estacionamiento</strong>
+			<p><i class="custom-icon icon-cab"></i> {$parkings}</p>
+		</div>
+EOT;
+	}
 }
 
-function print_property_benefits($vars) {
+function print_property_area($vars) {
+	echo $vars['area'][0] . ' mts<sup>2</sup>';
+}
+
+function print_property_benefits($vars, $large = false) {
 	$benefits = unserialize($vars['beneficios'][0]);
+	if (!is_array($benefits)) return false;
 	$icons = array(
 		'wifi' => 'wifi',
 		'hospital' => 'stethoscope',
@@ -561,18 +645,486 @@ function print_property_benefits($vars) {
 		'transporte' => 'Transporte Público',
 		'mercado' => 'Mercado / C.C. cercano',
 		'piscina' => 'Piscina',
-		'seguridad' => 'Sistema de Seguridad'
+		'seguridad' => 'Sistema de Vigilancia'
 	);
-	foreach ($benefits as $benefit) {
-		echo '<span><i class="custom-icon icon-' . $icons[$benefit] . '" data-toggle="tooltip" title="' . $descriptions[$benefit] . '"></i></span>';
+	
+	if (!$large) {
+		foreach ($benefits as $benefit) {
+			echo '<span><i class="custom-icon icon-' . $icons[$benefit] . '" data-toggle="tooltip" title="' . $descriptions[$benefit] . '"></i></span>';
+		}
+	}
+	else {
+		echo '<ul>';
+		foreach ($benefits as $benefit) {
+			echo '<li><i class="custom-icon icon-' . $icons[$benefit] . '" data-toggle="tooltip" title="' . $descriptions[$benefit] . '"></i></li>';
+		}
+		echo '</ul>';
 	}
 }
 
-function print_property_price($vars) {
+function print_property_price($vars, $msg = false) {
 	$price = str_replace('.', '', $vars['monto'][0]);
-	$price = (float)str_replace(',', '.', $price);
+	$price = floatval( str_replace(',', '.', $price) );
 	if ($price > 0) {
-		return currency() . number_format($price, 2, ',', '.' );
+		echo currency() . str_replace(',', ',<small class="decimals">', number_format($price, 2, ',', '.' )) . '</small>';
+		return true;
 	}
-	return '';
+	if ($msg) {
+		echo 'Consultar precio';
+	}
+	return false;
 }
+
+function print_property_location($vars, $separator = ', ') {
+	$has_state = !empty($vars['estado'][0]) && $vars['estado'][0] != 'null';
+	$has_city = !empty($vars['ciudad'][0]) && $vars['ciudad'][0] != 'null';
+	echo ($has_state ? $vars['estado'][0] : '') . ($has_state && $has_city ? $separator : '') . ($has_city ? get_city($vars) : '');
+}
+
+function print_property_description($vars, $trimmed = true) {
+	if ($trimmed) {
+		echo ucfirst(substr($vars['descripcion'][0], 0, 400)) . '...';
+	}
+	else {
+		echo ucfirst(nl2br($vars['descripcion'][0]));
+	}
+}
+
+function print_property_address($vars) {
+	$comma = ($vars['zona'][0] != '' && $vars['direccion'][0] != '') ? ', ' : '';
+	echo $vars['zona'][0] . $comma . $vars['direccion'][0];
+}
+
+function print_property_title($item) {
+	echo ucfirst($item->post_title);
+}
+
+function get_property_coordenates($vars) {
+	$loc = unserialize($vars['coordenadas'][0]);
+	if ($loc === false) return '';
+	return $loc['lat'] . ',' . $loc['lng'];
+}
+
+function get_city($vars) {
+	$city = explode('_', $vars['ciudad'][0]);
+	if (is_array($city)) {
+		if (count($city) > 1) {
+			return next($city);
+		}
+		else {
+			return reset($city);
+		}
+	}
+	return !empty($city) ? $city : '';
+}
+
+//blog
+function get_blog_image($item, $size = null) {
+	if ($size == null) {
+		$img = wp_get_attachment_image_src(get_post_thumbnail_id($item->ID), 'large', false, '');
+	}
+	else {
+		$img = wp_get_attachment_image_src(get_post_thumbnail_id($item->ID), $size, false, '');
+	}
+	if (is_array($img)) $img = reset($img);
+	if (empty($img)) {
+		$img = esc_url( get_template_directory_uri() ) . '/img/img_placeholder.jpg';
+	}
+	return $img;
+}
+
+function cleanContent($str) {
+	return trim(strip_tags(str_replace('<p>', '<br>', $str), '<br>'));
+}
+
+function print_blog_content($item, $full = true) {
+	if ($full) {
+		echo cleanContent($item->post_content);
+	}
+	else {
+		echo substr(cleanContent($item->post_content), 0, 100) . '...';
+	}
+}
+
+//asesor
+function get_asesor_image($item, $size = null) {
+	if ($size == null) {
+		$img = wp_get_attachment_image_src(get_post_thumbnail_id($item->ID), 'small', false, '');
+	}
+	else {
+		$img = wp_get_attachment_image_src(get_post_thumbnail_id($item->ID), $size, false, '');
+	}
+	if (is_array($img)) $img = reset($img);
+	if (empty($img)) {
+		$img = esc_url( get_template_directory_uri() ) . '/img/img_placeholder_user.png';
+	}
+	return $img;
+}
+
+function print_asesor_name($item) {
+	echo trim(ucwords(strtolower($item->post_title)));
+}
+
+function print_asesor_function($vars) {
+	echo $vars['funcion'][0];
+}
+
+function print_asesor_phones($vars) {
+	for ($i = 1; $i <=2; $i++ ) {
+		$phone = $vars['telefono_' . $i][0];
+		if (!empty($phone)) {
+			echo '<li>' . $phone . '</li>';
+		}
+	}
+}
+
+function print_asesor_pin($vars) {
+	echo $vars['pin'][0];
+}
+
+function print_asesor_social_links($vars) {
+	$socials = array('facebook', 'instagram', 'twitter');
+	$social_icons = array(
+		'facebook' => 'fa-facebook-official',
+		'instagram' => 'fa-instagram',
+		'twitter' => 'fa-twitter'
+	);
+	foreach ($socials as $social) {
+		$link = $vars[$social][0];
+		if (!empty($link)) {
+			echo '<li><a class="icon-' . $social . '" href="' . $link . '"><i class="fa ' . $social_icons[$social] . '"></i></a></li>';
+		}
+	}
+}
+
+//contacto
+function print_contacto_description($vars) {
+	echo $vars['descripcion'][0];
+}
+
+function print_contacto_address($vars) {
+	echo $vars['direccion'][0];
+}
+
+function print_contacto_phones($vars) {
+	echo $vars['telefonos'][0];
+}
+
+function print_contacto_emails($vars) {
+	echo $vars['correos'][0];
+}
+
+function get_contacto_coordenates($vars = null) {
+	$loc = $vars != null ? unserialize($vars['ubicacion'][0]) : false;
+	if ($loc === false) return '8.315562492065828,-62.71965980529785'; //<-- default
+	return $loc['lat'] . ',' . $loc['lng'];
+}
+
+
+/**
+ * Class for adding a new field to the options-general.php page
+ */
+class Add_Settings_Field {
+
+	/**
+	 * Class constructor
+	 */
+	public function __construct() {
+		add_filter( 'admin_init' , array( &$this , 'register_fields' ) );
+	}
+
+	/**
+	 * Add new fields to wp-admin/options-general.php page
+	 */
+	public function register_fields() {
+		register_setting( 'general', 'address1', 'esc_attr' );
+		register_setting( 'general', 'phone1', 'esc_attr' );
+		register_setting( 'general', 'email1', 'esc_attr' );
+		register_setting( 'general', 'copyrights1', 'esc_attr' );
+		register_setting( 'general', 'facebook1', 'esc_attr' );
+		register_setting( 'general', 'twitter1', 'esc_attr' );
+		register_setting( 'general', 'instagram1', 'esc_attr' );
+		
+		add_settings_field(
+			'address1',
+			'<label for="address1">Dirección</label>',
+			array( &$this, 'address1_html' ),
+			'general'
+		);
+
+		add_settings_field(
+			'phone1',
+			'<label for="phone1">Teléfonos</label>',
+			array( &$this, 'phone1_html' ),
+			'general'
+		);
+		
+		add_settings_field(
+			'email1',
+			'<label for="email1">Correo</label>',
+			array( &$this, 'email1_html' ),
+			'general'
+		);
+		
+		add_settings_field(
+			'copyrights1',
+			'<label for="copyrights1">Nota de Pie de Página</label>',
+			array( &$this, 'copyrights_html' ),
+			'general'
+		);
+		
+		add_settings_field(
+			'facebook1',
+			'<label for="facebook1">Facebook</label>',
+			array( &$this, 'facebook1_html' ),
+			'general'
+		);
+		
+		add_settings_field(
+			'twitter1',
+			'<label for="twitter1">Twitter</label>',
+			array( &$this, 'twitter1_html' ),
+			'general'
+		);
+		
+		add_settings_field(
+			'instagram1',
+			'<label for="instagram1">Instagram</label>',
+			array( &$this, 'instagram1_html' ),
+			'general'
+		);
+	}
+
+	/**
+	 * HTML for extra settings
+	 */
+	public function address1_html() {
+		$value = get_option( 'address1', '' );
+		echo '<textarea id="address1" name="address1" rows="4" style="width:300px;heigth:400px">' . esc_attr( $value ) . '</textarea>';
+	}
+
+	public function phone1_html() {
+		$value = get_option( 'phone1', '' );
+		echo '<input type="text" id="phone1" name="phone1" value="' . esc_attr( $value ) . '" style="width:300px" />';
+	}
+	
+	public function email1_html() {
+		$value = get_option( 'email1', '' );
+		echo '<input type="email" id="email1" name="email1" value="' . esc_attr( $value ) . '" style="width:300px" />';
+	}
+	
+	public function copyrights_html() {
+		$value = get_option( 'copyrights1', '' );
+		echo '<input type="text" id="copyrights1" name="copyrights1" value="' . esc_attr( $value ) . '" style="width:400px" />';
+	}
+	
+	public function facebook1_html() {
+		$value = get_option( 'facebook1', '' );
+		echo '<input type="text" id="facebook1" name="facebook1" value="' . esc_attr( $value ) . '" style="width:400px" />';
+	}
+	
+	public function twitter1_html() {
+		$value = get_option( 'twitter1', '' );
+		echo '<input type="text" id="twitter1" name="twitter1" value="' . esc_attr( $value ) . '" style="width:400px" />';
+	}
+	
+	public function instagram1_html() {
+		$value = get_option( 'instagram1', '' );
+		echo '<input type="text" id="instagram1" name="instagram1" value="' . esc_attr( $value ) . '" style="width:400px" />';
+	}
+
+}
+new Add_Settings_Field();
+
+function load_custom_settings() {
+	$GLOBALS['address1'] = get_option('address1', '');
+	$GLOBALS['phone1'] = get_option('phone1', '');
+	$GLOBALS['email1'] = get_option('email1', '');
+	$GLOBALS['copyrights1'] = get_option('copyrights1', '');
+	$GLOBALS['facebook1'] = get_option('facebook1', '');
+	$GLOBALS['twitter1'] = get_option('twitter1', '');
+	$GLOBALS['instagram1'] = get_option('instagram1', '');
+}
+
+function print_address() {
+	echo nl2br($GLOBALS['address1']);
+}
+
+function print_phone() {
+	echo $GLOBALS['phone1'];
+}
+
+function print_email() {
+	echo $GLOBALS['email1'];
+}
+
+function print_copyrights() {
+	echo $GLOBALS['copyrights1'];
+}
+
+function print_social($site) {
+	$link = $GLOBALS[$site . '1'];
+	if (!empty($link)) {
+		echo <<<EOT
+		<li>
+			<a href="{$link}"><i class="fa fa-{$site}"></i></a>
+		</li>
+EOT;
+	}
+}
+
+
+function print_zones_list() {
+	global $wpdb;
+
+	$results = $wpdb->get_results('SELECT DISTINCT meta_value AS "zone" FROM wp_postmeta WHERE meta_key = "zona"');
+
+	$list = array();
+	foreach ($results as $result) {
+		if (!empty($result->zone)) {
+			$list[] = "'" . str_replace('\'', '', $result->zone) . "'";
+		}
+	}
+
+	$results = $wpdb->get_results('SELECT nombre AS "ciudad" FROM ciudad');
+
+	foreach ($results as $result) {
+		if (!empty($result->ciudad)) {
+			$list[] = "'" . str_replace('\'', '', $result->ciudad) . "'";
+		}
+	}
+
+	echo implode(',', $list);
+}
+
+function get_types_list($as_options, $selected = null) {
+	//cannot find a function to return an array with the taxonomies, so...
+	$args = array(
+		'taxonomy' => 'tipo',
+		'style' => 'none',
+		'echo' => 0
+	);
+	$types = wp_list_categories($args);
+	$types = explode('<br />', $types);
+	$list = array();
+	foreach ($types as $type) {
+		$type = trim(strip_tags($type));
+		if (strlen($type) > 0) {
+			$type = get_term_by( 'name', $type, 'tipo' );
+			if ($as_options) {
+				if ($selected == $type->slug) {
+					$list[] = '<option selected value="' . $type->slug . '">' . $type->name . '</option>';
+				}
+				else {
+					$list[] = '<option value="' . $type->slug . '">' . $type->name . '</option>';
+				}
+			}
+			else {
+				$list[$type->slug] = $type->name;
+			}
+		}
+	}
+
+	if ($as_options) {
+		return implode('', $list);
+	}
+	return $list;
+}
+
+function get_operations_list($as_options = false, $selected = null) {
+	global $wpdb;
+
+	$results = $wpdb->get_results('SELECT DISTINCT meta_value AS "operacion" FROM wp_postmeta WHERE meta_key = "operacion"');
+
+	$list = array();
+	foreach ($results as $result) {
+		if (!empty($result->operacion)) {
+			if ($as_options) {
+				if ($selected == $result->operacion) {
+					$list[] = '<option selected value="' . $result->operacion . '">' . $result->operacion . '</option>';
+				}
+				else {
+					$list[] = '<option value="' . $result->operacion . '">' . $result->operacion . '</option>';
+				}
+			}
+			else {
+				$list[] = $result->operacion;
+			}
+		}
+	}
+
+	if ($as_options){
+		return implode('', $list);
+	}
+	return $list;
+}
+
+//bookmarking
+
+function output($state, $bookmarked = 0, $die = true) {
+	echo json_encode(array('ok' => $state, 'bookmarked' => $bookmarked));
+	if ($die) die();
+}
+
+function bookmark($type, $u_id, $vals) {
+	global $wpdb;
+	if ($type == 1) {
+		$p_id = $vals['propiedad_id'];
+		$wpdb->query("INSERT INTO favoritos (usuario_id, propiedad_id) VALUES ({$u_id}, {$p_id})");
+	}
+	else {
+		$fields = implode(',', array_keys($vals));
+		$values = '"' . implode('","', array_values($vals)) . '"';
+		$wpdb->query("INSERT INTO favoritos (usuario_id, {$fields}) VALUES ({$u_id}, {$values})");
+	}
+}
+
+function undoBookmark($u_id, $p_id) {
+	global $wpdb;
+	$wpdb->query("DELETE FROM favoritos WHERE usuario_id = {$u_id} AND propiedad_id = {$p_id}");
+}
+
+function checkIfAlreadyBookmarked($u_id, $zona, $tipo, $operacion, &$vals) {
+	global $wpdb;
+
+	$vals = array();
+	$where = array();
+	if ($zona != '') {
+		$where[] = "zona='{$zona}'";
+		$vals['zona'] = $zona;
+	}
+	if ($tipo != '') {
+		$where[] = "tipo='{$tipo}'";
+		$vals['tipo'] = $tipo;
+	}
+	if ($operacion != '') {
+		$where[] = "operacion='{$operacion}'";
+		$vals['operacion'] = $operacion;
+	}
+	$where = implode(' AND ', $where);
+	return $wpdb->get_var("SELECT COUNT(*) FROM favoritos WHERE usuario_id = {$u_id} AND {$where}") > 0;
+}
+
+function bookmark_search_for_user($values) {
+	$zona = trim($values['zona']);
+	$tipo = trim($values['tipo']);
+	$operacion = trim($values['operacion']);
+	$u_id = get_current_user_id();
+	
+	if (!empty($zona) || !empty($tipo) || !empty($operacion)) {
+		$vals = array();
+		$already_bookmarked = checkIfAlreadyBookmarked($u_id, $zona, $tipo, $operacion, $vals);
+		if (!$already_bookmarked) {
+			bookmark(2, $u_id, $vals);
+		}
+	}
+}
+
+
+function my_enqueue( $hook ) {
+    if ('post.php' != $hook) {
+        return;
+    }
+    wp_enqueue_script( 'my_custom_script', get_template_directory_uri() . '/js/custom_admin.js' );
+}
+add_action('admin_enqueue_scripts', 'my_enqueue');

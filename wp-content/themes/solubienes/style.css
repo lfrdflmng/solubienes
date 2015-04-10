@@ -257,6 +257,10 @@ i.custom-icon.icon-pool:before {
 	margin-top: 50px;
 }
 
+a.no-decoration {
+	text-decoration: none;
+}
+
 /* header */
 
 body {
@@ -272,6 +276,7 @@ header {
 
 header .logo {
 	filter: brightness(0) invert(1);
+	-webkit-filter: brightness(0) invert(1);
 }
 
 header .logo img {
@@ -352,10 +357,12 @@ header .color-bar > div i, header .color-bar > div span {
 header .color-bar .icon-key {
 	font-size: 30px;
 	margin-top: 5px;
+	cursor: pointer;
 }
 
 header a.login-btn {
 	color: #fff;
+	display: block;
 }
 
 header .left-inf > .row {
@@ -366,14 +373,18 @@ header .left-inf > .row {
 header ul.social-icons li {
 	display: inline-block;
 	margin-left: 20px;
+}
+
+header ul.social-icons li a {
 	color: #fff;
+	text-decoration: none;
 }
 
 /* hover menu */
 .hover-menu {
 	display: none;
 	position: fixed;
-	background-color: rgba(0,54,138,1);/*#00368a;*/
+	background-color: rgba(0,54,138,.95);/*#00368a;*/
 	top: 70px;
 	left: 0;
 	right: 0;
@@ -531,6 +542,50 @@ header ul.social-icons li {
 	}
 }
 
+/* login / sign-up form */
+.tab_content_login p, .modal-body p {
+	font-size: 18px
+}
+
+.tab_content_login label {
+	font-size: 25px;
+	font-weight: 600;
+	text-align: right !important;
+	width: 100%;
+}
+
+.tab_content_login input[type=text], .tab_content_login input[type=email], .tab_content_login input[type=password] {
+	font-size: 22px;
+	width: 100%;
+}
+
+.tab_content_login input[type=submit] {
+	font-size: 22px;
+	border: 0;
+	background-color: #0054d6;
+	color: #fff;
+	appearance: none;
+	padding: 2px 15px;
+}
+
+.tab_content_login input[type=submit]:hover {
+	opacity: .8;
+}
+
+.tab_container_login .rememberme label {
+	font-size: 18px;
+}
+
+.tab_container_login a {
+	font-size: 18px;
+	margin: 2px 10px;
+}
+
+.modal .userinfo a {
+	font-size: 18px;
+}
+
+
 /* main */
 
 .main {
@@ -575,9 +630,15 @@ header ul.social-icons li {
 
 .box {
 	border-radius: 4px;
-	box-shadow: 2px 2px 4px;
+	box-shadow: 2px 2px 4px #aaa;
 	margin-top: 30px;
 	margin-bottom: 30px;
+	transition: box-shadow .4s;
+}
+
+.box:hover {
+	box-shadow: 2px 2px 4px #888;
+	transition: box-shadow .4s;
 }
 
 .box .title {
@@ -595,11 +656,12 @@ header ul.social-icons li {
 	color: #fff;
 	background-color: rgba(0,0,0,.1);
 	padding: 2px 4px;
+	text-align: left;
 	border-top-right-radius: 4px;
 	transition: padding-bottom .4s ease-in;
 }
 
-.box .title h2:hover {
+.box:hover .title h2 {
 	padding-bottom: 30px;
 	transition: padding-bottom .5s ease-out;
 }
@@ -613,6 +675,11 @@ header ul.social-icons li {
 	border-radius: 50%;
 	cursor: pointer;
 	font-size: 30px;
+}
+
+.star.favorited {
+	background-color: #008000;
+	transition: background-color 1s;
 }
 
 .box .title .star {
@@ -647,6 +714,7 @@ header ul.social-icons li {
 
 .box .icons span {
 	margin-right: 10px;
+	color: #262626;
 }
 
 .box .price {
@@ -655,6 +723,7 @@ header ul.social-icons li {
 	text-align: right;
 	padding-right: 10px;
 	margin-top: 10px;
+	color: #262626;
 }
 
 .box .location {
@@ -666,6 +735,7 @@ header ul.social-icons li {
 .box .desc p {
 	font-size: 14px;
 	padding: 10px;
+	color: #8b8b8b;
 }
 
 .with-arows {
@@ -927,6 +997,26 @@ iframe {
 	width: 90%;
 }
 
+/* typeahead */
+.twitter-typeahead {
+	width: 100%;
+}
+.tt-dropdown-menu {
+	width: 100%;
+	margin-top: -9px;
+	z-index: 999;
+}
+.tt-dropdown-menu .tt-dataset-zones > * > * {
+	background-color: #fff;
+	color: #000;
+	padding: 5px;
+	cursor: default;
+}
+
+.tt-dropdown-menu .tt-dataset-zones > * > *:hover {
+	background-color: #848484;
+	color: #fff;
+}
 
 /* properties page */
 
@@ -1014,6 +1104,14 @@ article.single .gallery-previews .thumb img {
 	transform: translateX(-50%);
 }
 
+article.single .gallery-previews .thumb figure {
+	width: 80%;
+	height: 100%;
+	margin: auto;
+	background-position: center center;
+	background-size: cover;
+}
+
 article.single .location {
 	margin-top: 20px;
 }
@@ -1080,6 +1178,13 @@ article.single .content p {
 	margin: 20px 0px;
 	font-size: 40px;
 	font-weight: 600;
+}
+
+small.decimals {
+	font-size: 30px;
+}
+.box small.decimals {
+	font-size: 25px;
 }
 
 /* consultants page */
@@ -1358,6 +1463,52 @@ article.blog.single .content img {
 	opacity: .9;
 }
 
+.contact-form .agree_field {
+	position: absolute;
+	right: 2000px;
+	top: -2000px;
+}
+
+/* legal page */
+
+.header.bg-default.legal {
+	background-image: url('img/bg_default_contact.jpg');
+}
+
+article.legal, article.legal p {
+	font-size: 18px;
+	font-weight: 300;
+	margin: 20px 20px;
+	line-height: 1.5;
+	text-align: justify;
+	color: #212121;
+}
+
+article.legal h1 {
+	font-size: 40px;
+	font-weight: 600;
+	margin-bottom: 10px;
+}
+
+article.legal h2 {
+	font-size: 30px;
+	font-weight: 600;
+	color: #000;
+	text-align: left;
+	margin-left: 20px;
+	margin-top: 30px;
+}
+
+/* 404 page */
+
+.header.bg-default.not-found {
+	background-image: url('img/bg_default_404.jpg');
+}
+
+.no-results {
+	margin-top: 50px;
+	text-align: center;
+}
 
 
 /* svg icon animation */
@@ -1372,6 +1523,10 @@ article.blog.single .content img {
   left: 0;
   right: 0;
   margin: auto;
+}
+
+.contact-form-alt .svg-icon-wrapper {
+	top: 120px;
 }
 
 .svg-icon-wrapper:before,
@@ -1415,7 +1570,7 @@ article.blog.single .content img {
 }
 /* /svg icon animation */
 
-.sending, .sent {
+.sending, .sent, .not-sent {
 	text-align: center;
 }
 
@@ -1428,7 +1583,7 @@ article.blog.single .content img {
 	right: 0;
 }
 
-.sent .icon-wrapper {
+.sent .icon-wrapper, .not-sent .icon-wrapper {
   width: 120px;
   height: 170px;
   position: absolute;
@@ -1441,10 +1596,20 @@ article.blog.single .content img {
 
 .sent .icon-ok {
 	font-size: 120px;
-	color: #4F6534;
+	color: #4f6534;
 }
 
-.sent h1 {
+.not-sent .icon-bad {
+	font-size: 120px;
+	color: #8b1820;
+}
+
+.contact-form-alt .sent .icon-ok, .contact-form-alt .not-sent .icon-bad {
+	font-size: 80px;
+	margin-top: 18px;
+}
+
+.sent h1, .not-sent h1 {
 	position: absolute;
 	margin: auto;
 	left: 0;
@@ -1501,12 +1666,22 @@ article.blog.single .content img {
 	font-size: 25px;
 }
 
-.business-card .icon-mail {
+.business-card a.icon-mail {
 	font-size: 30px;
 	color: #000;
 	display: block;
 	float: right;
 	margin-right: 10px;
+}
+
+.business-card div.icon-mail {
+	font-size: 30px;
+	color: #000;
+	display: block;
+	position: absolute;
+	right: 7px;
+	bottom: 7px;
+	cursor: pointer;
 }
 
 

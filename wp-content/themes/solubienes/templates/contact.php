@@ -10,21 +10,24 @@
 	<div class="card">
 		<div class="front">
 			<div class="contact-form">
-				<form method="post">
+				<form class="contact-ajax-form" method="post" action="<?php echo get_template_directory_uri() . '/ajax/process_contact.php'; ?>">
 					<h2><?php echo $form_title; ?></h2>
 					<div class="input">
-						<input type="text" placeholder="Nombre y Apellidos" required>
+						<input type="text" name="nombre" placeholder="Nombre y Apellidos" required>
 					</div>
 					<div class="input">
-						<input type="tel" placeholder="Teléfono">
+						<input type="tel" name="telefono" placeholder="Teléfono">
 					</div>
 					<div class="input">
-						<input type="email" placeholder="Correo" required>
+						<input type="email" name="correo" placeholder="Correo" required>
 					</div>
 					<div class="input">
-						<textarea placeholder="Mensaje"><?php echo $form_msg; ?></textarea>
+						<textarea name="mensaje" placeholder="Mensaje"><?php echo $form_msg; ?></textarea>
 					</div>
 					<div class="submit">
+						<div class="agree_field">
+							<input type="checkbox" name="agree" id="agree" value="agree"><label for="agree">I agree with the terms &amp; conditions</label>
+						</div>
 						<button type="submit">Enviar</button>
 					</div>
 				</form>
@@ -43,6 +46,12 @@
 					<i class="icon-ok fa fa-check"></i>
 				</div>
 				<h1>Mensaje enviado</h1>
+			</div>
+			<div class="not-sent hidden">
+				<div class="icon-wrapper">
+					<i class="icon-bad fa fa-times-circle"></i>
+				</div>
+				<h1>Ha ocurrido un error.<br>Por favor intente luego</h1>
 			</div>
 		</div>
 	</div>
