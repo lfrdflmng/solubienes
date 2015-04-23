@@ -846,6 +846,18 @@ function print_asesor_social_links($vars) {
 	}
 }
 
+function get_asesor_states($vars) {
+	if (!empty($vars['asesor_estado'][0])) {
+		$states = unserialize( $vars['asesor_estado'][0] );
+		if (is_array($states)) {
+			foreach ($states as $key => $value) {
+				$states[$key] = strtolower(remove_accents($value));
+			}
+		}
+	}
+	return $states;
+}
+
 //contacto
 function print_contacto_description($vars) {
 	echo $vars['descripcion'][0];
@@ -1044,6 +1056,34 @@ function print_zones_list() {
 	}
 
 	echo implode(',', $list);
+}
+
+function get_states_list($as_options, $selected = null) {
+	global $wpdb;
+
+	$results = $wpdb->get_results('SELECT DISTINCT meta_value AS "estado" FROM wp_postmeta WHERE meta_key = "estado"');
+
+	$list = array();
+	foreach ($results as $result) {
+		if (!empty($result->estado)) {
+			if ($as_options) {
+				if ($selected == $result->estado) {
+					$list[] = '<option selected value="' . $result->estado . '">' . $result->estado . '</option>';
+				}
+				else {
+					$list[] = '<option value="' . $result->estado . '">' . $result->estado . '</option>';
+				}
+			}
+			else {
+				$list[] = $result->estado;
+			}
+		}
+	}
+
+	if ($as_options) {
+		return implode('', $list);
+	}
+	return $list;
 }
 
 function get_types_list($as_options, $selected = null) {

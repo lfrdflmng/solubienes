@@ -14,8 +14,23 @@ EOT;
 EOT;
 	}
 
+	function state() {
+		$value = isset($_GET['estado']) ? $_GET['estado'] : '';
+		$states = get_states_list(true, $value);
+
+		echo <<<EOT
+			<select name="estado">
+				<option{$non_selected} value="">Estado</option>
+				{$states}
+			</select>
+EOT;
+	}
+
 	function zone() {
 		$value = isset($_GET['zona']) ? (' value="' . $_GET['zona'] . '"') : '';
+
+		$non_selected = $value == '' ? ' selected' : '';
+
 		echo <<<EOT
 			<input type="text" name="zona" class="typeahead-zones" placeholder="Ingresa la zona"{$value}>
 EOT;
@@ -91,10 +106,16 @@ $margin_top = is_home() ? ' style="margin-top:150px"' : '';
 			</div>
 		</div>
 
+		<!-- state -->
+		<div class="row">
+			<div class="col-md-12 col-sm-12">
+				<?php state(); ?>
+			</div>
+		</div>
+
 		<!-- zone -->
 		<div class="row">
 			<div class="col-md-12 col-sm-12">
-				<!--input type="text" placeholder="Ingresa la zona"-->
 				<?php zone(); ?>
 			</div>
 		</div>
@@ -129,8 +150,12 @@ $margin_top = is_home() ? ' style="margin-top:150px"' : '';
 <div class="finder wide animated fadeInUp"<?php echo $margin_top; ?>> <!-- lightSpeedIn -->
 	<?php form_open(); ?>
 		<div class="row">
+			<!-- state -->
+			<div class="col-md-3 col-sm-6">
+				<?php state(); ?>
+			</div>
 			<!-- zone -->
-			<div class="col-md-6 col-sm-12">
+			<div class="col-md-3 col-sm-6">
 				<?php zone(); ?>
 			</div>
 			<!-- type -->

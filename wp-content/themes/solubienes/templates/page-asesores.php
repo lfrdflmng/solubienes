@@ -52,6 +52,18 @@ get_header(); ?>
 		
 		<div class="row">
 			<div class="col-md-9">
+
+				<div class="row asesor-filter">
+					<div class="col-sm-6 col-xs-6">
+						<label for="filter_state">Estado:</label>
+					</div>
+					<div class="col-sm-6 col-xs-6">
+						<select id="filter_state">
+							<option value="">Seleccione</option>
+							<?php echo get_states_list(true, isset($_GET['estado']) ? $_GET['estado'] : ''); ?>
+						</select>
+					</div>
+				</div>
 				
 				<!-- cards -->
 				<div id="cards_holder">
@@ -69,9 +81,10 @@ get_header(); ?>
 							$img = get_asesor_image( $item );
 
 							$asesor_vars = get_post_custom( $item->ID );
+							$states = get_asesor_states( $asesor_vars );
 					?>
 					<div class="card-placeholder">
-						<div class="card business-card">
+						<div class="card business-card <?php echo is_array($states) ? implode(' ', $states) : $states; ?>">
 							<!-- card's front -->
 							<div class="front">
 								<div class="row">
@@ -184,11 +197,12 @@ get_header(); ?>
 <?php
 	$GLOBALS['script'] = <<<EOT
 <script type="text/javascript">
+	var _cards = false;
 	jQuery(document).ready(function($) {
 		if ($(window).width() > 360) {
 			var container = $('#cards_holder');
 		    container.find('.card-placeholder').css('width', '350px');
-		    container.isotope({
+		    _cards = container.isotope({
 				itemSelector: '.card-placeholder',
 				masonry: {
 					columnWidth: 400,
@@ -207,6 +221,22 @@ get_header(); ?>
 		$('body').click(function(e) {
 			if ($(e.target).closest('.card').length == 0) { //if ( e.target == this ) { //<-- body on blank space
 				$('.card.flipped').removeClass('flipped');
+			}
+		});
+
+		//filtering
+		$('#filter_state').change(function() {
+			var val = $(this).val();
+			val = remove_accents(val).toLowerCase();
+			if (val == '') {
+				$('.business-card').show();
+			}
+			else {
+				$('.business-card').hide();
+				$('.business-card.' + val).show();
+			}
+			if (typeof _cards != 'boolean') {
+				_cards.isotope('layout');
 			}
 		});
 	});
@@ -736,6 +766,11 @@ get_header(); ?>
 			if ($(e.target).closest('.card').length == 0) { //if ( e.target == this ) { //<-- body on blank space
 				$('.card.flipped').removeClass('flipped');
 			}
+		});
+
+		//filtering
+		$('#filter_state').change(function() {
+			console.log( $(this).val() );
 		});
 	});
 </script>

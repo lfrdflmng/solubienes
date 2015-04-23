@@ -16,12 +16,16 @@ get_header(); ?>
 	<div class="container-fluid header bg-default blogsingle">
 	<?php else : ?>
 	<div class="container-fluid header blogsingle" style="background-image:url(<?php echo $feat_image; ?>)">
+		<div class="overlay">
 	<?php endif; ?>
-		<div class="row">
-			<div class="col-md-10 col-md-offset-1">
-				<h1><?php echo $post->post_title; ?></h1>
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1">
+					<h1><?php echo $post->post_title; ?></h1>
+				</div>
 			</div>
+		<?php if (!empty($feat_image)) : ?>
 		</div>
+		<?php endif; ?>
 	</div>
 
 	<div class="vertical-space-small"></div>

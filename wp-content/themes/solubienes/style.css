@@ -224,6 +224,11 @@ i.custom-icon.icon-pool:before {
 	margin-top: 60px;
 }
 
+.with-noise {
+	background-image: url(img/noise.png);
+	background-repeat: repeat;
+}
+
 .table-center {
 	display: table;
 	height: 100%;
@@ -1266,6 +1271,20 @@ small.decimals {
 	margin-bottom: 20px;
 }
 
+.asesor-filter {
+	background-color: #0054d6;
+	border-radius: 4px;
+	margin: 0 0 40px 0;
+	padding: 15px;
+	font-size: 22px;
+}
+
+.asesor-filter label {
+	color: #fff;
+	text-align: right;
+	display: block;
+}
+
 .contact-form-alt {
 	/*max-width: 45%;
 	min-width: 290px;*/
@@ -1300,6 +1319,10 @@ small.decimals {
 	border: 0;
 	outline: 0;
 	transition: background-color .5s;
+}
+
+.contact-form-alt textarea {
+	resize: none;
 }
 
 .contact-form-alt input:focus, .contact-form-alt textarea:focus {
@@ -1732,6 +1755,12 @@ article.legal h2 {
 	right: 7px;
 	bottom: 7px;
 	cursor: pointer;
+}
+
+@media (max-width: 767px) {
+	.business-card figure {
+		background-position: top center;
+	}
 }
 
 

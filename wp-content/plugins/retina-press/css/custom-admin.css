@@ -1669,7 +1669,7 @@ only screen and (min-resolution: 2dppx) {
 #dashboard_right_now, #wp_dashboard_widget, #dashboard_activity, #dashboard_primary, #column3-sortables,
 #menu-dashboard ul.wp-submenu, #menu-media, #menu-pages ul.wp-submenu, #menu-comments, #menu-appearance, #menu-plugins, 
 #menu-tools, #menu-settings ul.wp-submenu, #wpfooter, #content-permissions-meta-box , #toplevel_page_edit-post_type-acf, 
-#menu-users ul.wp-submenu, #pageparentdiv, .handlediv {
+#menu-users ul.wp-submenu, #pageparentdiv, .handlediv, .count {
 	display: none !important;
 	visibility: hidden !important;
 }

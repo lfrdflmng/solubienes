@@ -119,7 +119,11 @@
 
 		//cookies for searches
 		if(typeof(Storage) !== 'undefined') {
-			<?php if (isset($_GET['zona'], $_GET['tipo'], $_GET['operacion'])) : ?>
+			<?php if (isset($_GET['estado']) || isset($_GET['zona']) || isset($_GET['tipo']) || isset($_GET['operacion'])) : ?>
+				<?php if (!empty($_GET['estado'])) : ?>
+			    localStorage.setItem('estado', '<?php echo $_GET['estado']; ?>');
+			    <?php endif; ?>
+
 				<?php if (!empty($_GET['zona'])) : ?>
 			    localStorage.setItem('zona', '<?php echo $_GET['zona']; ?>');
 			    <?php endif; ?>
@@ -132,6 +136,7 @@
 			    localStorage.setItem('operacion', '<?php echo $_GET['operacion']; ?>');
 			    <?php endif; ?>
 			<?php else : ?>
+				$('select[name=estado]').val( localStorage.getItem('estado') );
 				$('input[name=zona]').val( localStorage.getItem('zona') );
 				$('select[name=tipo]').val( localStorage.getItem('tipo') );
 				$('select[name=operacion]').val( localStorage.getItem('operacion') );

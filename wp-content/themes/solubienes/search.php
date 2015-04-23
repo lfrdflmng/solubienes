@@ -65,9 +65,13 @@ get_header(); ?>
 							if ($project->post_type != 'solubienes') continue;
 							$project_vars = get_post_custom( $project->ID );
 
-							//filtering by zone, operation and price
+							//filtering by state, zone, operation and price
+							if (!empty($_GET['estado'])) {
+								if ($project_vars['estado'][0] != $_GET['estado']) continue;
+							}
 							if (!empty($_GET['zona'])) {
-								if ($project_vars['zona'][0] != $_GET['zona'] && get_city($project_vars) != $_GET['zona']) continue;
+								$zone = strtolower(remove_accents($_GET['zona']));
+								if (strtolower(remove_accents($project_vars['zona'][0])) != $zone && strtolower(remove_accents(get_city($project_vars))) != $zone) continue;
 							}
 							if (!empty($_GET['operacion'])) {
 								if ($project_vars['operacion'][0] != $_GET['operacion']) continue;
